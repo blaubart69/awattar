@@ -1,5 +1,5 @@
 param (
-    [int]$year
+     [int]$year
     ,[int]$month
 )
 
@@ -13,16 +13,20 @@ $groupPerDay =
             Date       = $_.Name
             EuroNet    = $EuroNet
             EuroBrutto = $EuroNet * 1.2
+            kWhDay     = ( $_.Group | Measure-Object -Sum kWh ).Sum
         }
     }
 )
 
 $groupPerDay
 
-$SumNet = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
-$vat = $SumNet * 0.2
-$gross = $SumNet + $vat
-$awatt = $gross * 0.03
+$SumNet      = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
+$vat         = $SumNet * 0.2
+$gross       = $SumNet + $vat
+$awatt       = $gross * 0.03
+$daysInMonth = ( $groupPerDay | Measure-Object ).Count
+$kwHSum      = ( $groupPerDay | Measure-Object -Sum -Property kWhDay ).Sum
+$kWhAverage  = $kwHSum / $daysInMonth
 
 [PSCustomObject]@{
     EuroSumNet  = $SumNet
@@ -30,4 +34,7 @@ $awatt = $gross * 0.03
     Awattar     = $awatt
     EuroBrutto  = $SumNet + $vat
     EuroTotal   = $SumNet + $vat + $awatt
-} | fl
+    kWhSum      = $kwHSum
+    kWhAveragePerDay = $kWhAverage
+    CentPerKwH = $SumNet / $kwHSum * 100
+} | Format-List
