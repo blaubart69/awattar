@@ -41,18 +41,18 @@ $groupPerDay
 
 $SumNet      = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
 $vat         = $SumNet * 0.2
-$gross       = $SumNet + $vat
-$awatt       = $gross * 0.03
 $daysInMonth = ( $groupPerDay | Measure-Object ).Count
 $kwHSum      = ( $groupPerDay | Measure-Object -Sum -Property kWhDay ).Sum
 $kWhAverage  = $kwHSum / $daysInMonth
+$AwattarEuro = ($SumNet * 0.03) + ( $kwHSum * 0.015 )
+
 
 [PSCustomObject]@{
     EuroSumNet  = $SumNet
     Mwst        = $vat
-    Awattar     = $awatt
+    AwattarEuro = $AwattarEuro
     EuroBrutto  = $SumNet + $vat
-    EuroTotal   = $SumNet + $vat + $awatt
+    EuroTotal   = $SumNet + $vat + $AwattarEuro
     EuroEarned  = $CentMinus / 100
     kWhSum      = $kwHSum
     kWhAveragePerDay = $kWhAverage
