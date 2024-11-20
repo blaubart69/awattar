@@ -37,7 +37,7 @@ $joinedData | % {
     }
 }
 
-$groupPerDay
+# $groupPerDay
 
 [decimal]$SumNet      = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
 [decimal]$daysInMonth = ( $groupPerDay | Measure-Object ).Count
@@ -47,6 +47,8 @@ $groupPerDay
 [decimal]$awattar     = [Math]::Abs($SumNet * [decimal]0.03) + ( $kwHSum * [decimal]0.015 )
 [decimal]$EnergyNet   = $SumNet + $awattar
 [decimal]$vat         = $EnergyNet * 0.2
+
+$f = '{0,10:N2}'
 
 [PSCustomObject]@{
     EPEX        = $SumNet
@@ -58,4 +60,12 @@ $groupPerDay
     kWhSum      = $kwHSum
     kWhAveragePerDay = $kWhAverage
     CentPerKwH = $SumNet / $kwHSum * 100
-} | Format-List
+} | Format-List -Property @{ e='EPEX'; FormatString=$f },
+        @{ e='Awattar'; FormatString=$f },
+        @{ e='EnergyNet'; FormatString=$f },
+        @{ e='Vat'; FormatString=$f },
+        @{ e='Brutto'; FormatString=$f },
+        @{ e='EuroEarned'; FormatString=$f },
+        @{ e='kWhSum'; FormatString=$f },
+        @{ e='kWhAveragePerDay'; FormatString=$f },
+        @{ e='CentPerKwH'; FormatString=$f }
