@@ -39,20 +39,21 @@ $joinedData | % {
 
 $groupPerDay
 
-$SumNet      = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
-$vat         = $SumNet * 0.2
-$daysInMonth = ( $groupPerDay | Measure-Object ).Count
-$kwHSum      = ( $groupPerDay | Measure-Object -Sum -Property kWhDay ).Sum
-$kWhAverage  = $kwHSum / $daysInMonth
-$AwattarEuro = ($SumNet * 0.03) + ( $kwHSum * 0.015 )
+[decimal]$SumNet      = ( $groupPerDay | Measure-Object -Sum -Property EuroNet ).Sum
+[decimal]$daysInMonth = ( $groupPerDay | Measure-Object ).Count
+[decimal]$kwHSum      = ( $groupPerDay | Measure-Object -Sum -Property kWhDay ).Sum
+[decimal]$kWhAverage  = $kwHSum / $daysInMonth
 
+[decimal]$awattar     = [Math]::Abs($SumNet * [decimal]0.03) + ( $kwHSum * [decimal]0.015 )
+[decimal]$EnergyNet   = $SumNet + $awattar
+[decimal]$vat         = $EnergyNet * 0.2
 
 [PSCustomObject]@{
-    EuroSumNet  = $SumNet
-    Mwst        = $vat
-    AwattarEuro = $AwattarEuro
-    EuroBrutto  = $SumNet + $vat
-    EuroTotal   = $SumNet + $vat + $AwattarEuro
+    EPEX        = $SumNet
+    Awattar     = $awattar
+    EnergyNet   = $EnergyNet
+    Vat         = $vat
+    Brutto      = $EnergyNet + $vat
     EuroEarned  = $CentMinus / 100
     kWhSum      = $kwHSum
     kWhAveragePerDay = $kWhAverage
