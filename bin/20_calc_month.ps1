@@ -44,8 +44,10 @@ $joinedData | % {
 [decimal]$kwHSum      = ( $groupPerDay | Measure-Object -Sum -Property kWhDay ).Sum
 [decimal]$kWhAverage  = $kwHSum / $daysInMonth
 
-[decimal]$awattar     = [Math]::Abs($SumNet * [decimal]0.03) + ( $kwHSum * [decimal]0.015 )
-[decimal]$EnergyNet   = $SumNet + $awattar
+[decimal]$awattar     = 4.73 + [Math]::Abs($SumNet * [decimal]0.03) + ( $kwHSum * [decimal]0.015 )
+# magic values           taken from Awattar bill and Wiener Netze "Netzentgelte"
+[decimal]$netcosts    = $kwHSum * ( (5.3 + 0.866) / 100 ) + 2.96 + 2.15         
+[decimal]$EnergyNet   = $SumNet + $awattar + $netcosts
 [decimal]$vat         = $EnergyNet * 0.2
 
 $f = '{0,10:N2}'
@@ -53,6 +55,7 @@ $f = '{0,10:N2}'
 [PSCustomObject]@{
     EPEX        = $SumNet
     Awattar     = $awattar
+    Netz        = $netcosts
     EnergyNet   = $EnergyNet
     Vat         = $vat
     Brutto      = $EnergyNet + $vat
@@ -62,6 +65,7 @@ $f = '{0,10:N2}'
     CentPerKwH = $SumNet / $kwHSum * 100
 } | Format-List -Property @{ e='EPEX'; FormatString=$f },
         @{ e='Awattar'; FormatString=$f },
+        @{ e='Netz'; FormatString=$f },
         @{ e='EnergyNet'; FormatString=$f },
         @{ e='Vat'; FormatString=$f },
         @{ e='Brutto'; FormatString=$f },

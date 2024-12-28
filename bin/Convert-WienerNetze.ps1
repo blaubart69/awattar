@@ -7,7 +7,7 @@ param (
 | Where-Object { -not [String]::IsNullOrEmpty($_.kwh)  } 
 | Add-Member -MemberType ScriptProperty -Name Hour -Value { ($this.starttime -split ':')[0] } -PassThru 
 | Group-Object -Property date,Hour
-| % {
+| ForEach-Object {
     ($date,$hour) = $_.Name -split ','  
     $kWhHour = ($_.Group | % { ($_.kWh -replace ',','.') -as [double] } | Measure-Object -Sum).Sum
 
