@@ -46,7 +46,7 @@ $joinedData | % {
 
 [decimal]$awattar     = 4.73 + [Math]::Abs($SumNet * [decimal]0.03) + ( $kwHSum * [decimal]0.015 )
 # magic values           taken from Awattar bill and Wiener Netze "Netzentgelte"
-[decimal]$netcosts    = $kwHSum * ( (5.3 + 0.866) / 100 ) + 2.96 + 2.15         
+[decimal]$netcosts    = $kwHSum * ( (7.4 + 0.7) / 100 ) + 4.08 + 2.22        
 [decimal]$EnergyNet   = $SumNet + $awattar + $netcosts
 [decimal]$vat         = $EnergyNet * 0.2
 
